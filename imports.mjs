@@ -10,4 +10,5 @@ export * as http from "http";
 export { getAppRootDir as approotdir } from "./approotdir.mjs";
 export { handle404, basicErrorHandler } from "./appsupport.mjs";
 export { router as indexRouter } from "./routes/index.mjs";
+export { router as notesRouter } from "./routes/notes.mjs";
 export { engine } from "express-handlebars";

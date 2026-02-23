@@ -1,3 +1,5 @@
+import { title } from "process";
+import { NotesStore } from "../app.mjs";
 import { express } from "../imports.mjs";
 
 export const router = express.Router();
@@ -5,24 +7,27 @@ export const router = express.Router();
 // Define routes using the router instance
 // This route will correspond to a GET request at the base path
 
-router.get("/", (req, res) => {
-	res.render("home", {
-		title: "Home Page",
-		name: "Hamzah",
-	});
-});
 
-router.get("/about", (req, res) => {
-	res.render("about", {
-		about: "This is the description about the home page",
-		para: "this is para",
-	});
-});
+// get the / home page
+router.get("/", async (req, res, next) => {
+	try {
+		const keyList = await NotesStore.keyList();
+		console.log(keyList);
 
+		const keyPromises = keyList.map((key) => {
+			return NotesStore.read(key);
+		});
+		console.log(keyPromises);
 
-router.get("/error", (req, res) => {
-	res.render("error", {
-		aboutError: "This is the description about the error page",
+		const noteList = await Promise.all(keyPromises);
+		console.log(noteList);
+
+		res.render("index", {
+			title: "Notes",
+			noteList: noteList,
+		});
 		
-	});
+	} catch (error) {
+		next(error);
+	}
 });

@@ -9,10 +9,14 @@ import {
 	bodyParser,
 	cookieParser,
 	indexRouter,
+	notesRouter,
 	handle404,
 	basicErrorHandler,
 	http,
 } from "./imports.mjs";
+import { InMemoryNotesStore } from "./models/notes-memory.mjs";
+
+export const NotesStore = new InMemoryNotesStore();
 
 dotenv.config();
 const app = express();
@@ -21,13 +25,16 @@ app.engine(
 	"hbs",
 
 	engine({
-		extname: "hbs",
-		defaultLayout: "main",
+		extname: ".hbs",
+		defaultLayout: "layout",
+		layoutsDir: path.join(getAppRootDir(), "views/layouts"),
+		partialsDir: path.join(getAppRootDir(), "views/partials"),
+
 	}),
 );
 
 app.set("view engine", "hbs");
-app.set("views", path.join(getAppRootDir(), "views"));	
+app.set("views", path.join(getAppRootDir(), "views"));
 // hbs.registerPartials(path.join(__dirname, "partials"));
 
 app.use(logger("dev"));
@@ -37,9 +44,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(getAppRootDir(), "public")));
 
 app.use("/", indexRouter);
-// app.use("/notes", notesRouter)
-
-
+app.use("/notes", notesRouter)
 
 app.use(handle404);
 app.use(basicErrorHandler);
